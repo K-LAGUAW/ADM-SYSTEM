@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% load static %}
+
+{% load widget_tweaks %}
+
+{% block title %}Clientes{% endblock %}
+
+{% block customCSS %}<link rel="stylesheet" href="{% static 'css/clients.css' %}">{% endblock %}
+
+{% block customJS %}<script src="{% static 'js/clients.js' %}"></script>{% endblock %}
+
+{% block content %}
+  <main class="d-flex flex-column vh-100">
+    {% include "components/navbar.html" %}
+    <div class="container flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center w-100 gap-3 mb-3">
+          <p class="m-0 fw-semibold">Filtrar por:</p>
+          <div class="d-flex gap-3">
+            <div class="form-floating" style="width: 200px;">
+              <select class="form-select" id="provinceFilter"></select>
+              <label for="provinceFilter">Provincia</label>
+            </div>
+            <div class="form-floating" style="width: 200px;">
+              <select class="form-select" id="localityFilter"></select>
+              <label for="localityFilter">Localidad</label>
+            </div>
+            <button type="button" class="btn btn-dark">Buscar</button>
+          </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">DNI</th>
+                <th scope="col">Celular</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.first_name }}</td>  
+                    <td>{{ customer.last_name }}</td>
+                    <td>{{ customer.dni }}</td>
+                    <td>
+                      <a href="https://api.whatsapp.com/send?phone=54{{ customer.phone }}" target="_blank">{{ customer.phone }}</a>
+                    </td>
+                </tr>
+              {% endfor %}  
+            </tbody>
+        </table>
+    </div>
+
+    <button type="button" class="btn btn-dark position-fixed bottom-0 end-0 m-3 d-inline-block" data-bs-toggle="modal" data-bs-target="#addModal">Agregar Cliente</button>
+
+    <div class="modal fade overflow-hidden" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white">
+            <h1 class="modal-title fs-5">Nuevo cliente</h1>
+          </div>
+          <form id="customerForm" action="{% url 'customers' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+                {% for field in form %}
+                  {% if field.name != "province" and field.name != "locality" %}
+                    <div class="form-floating mb-3">
+                      {{ field|add_class:"form-control"|attr:"placeholder: " }}
+                      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <div class="form-floating">  
+                      <select class="form-select" id="provinceSelect" name="province"></select>
+                      <label for="provinceSelect">Provincia</label>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="form-floating">
+                      <select class="form-select" id="localitySelect" name="locality"></select>
+                      <label for="localitySelect">Localidad</label>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-dark text-white">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-success" id="submitButton">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock %}
