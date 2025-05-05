@@ -2,9 +2,16 @@
 
 {% block title %}Página de Inicio{% endblock %}
 
+{% load static %}
+
+{% block customCSS %}<link rel="stylesheet" href="{% static 'css/home.css' %}">{% endblock %}
+
+{% block customJS %}
+    <script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
+
 {% block content %}
-    {% include "components/navbar.html" %}
-    <main>
-        
+    <main class="container">
+        {% include "components/navbar.html" %}
     </main>
 {% endblock %}
